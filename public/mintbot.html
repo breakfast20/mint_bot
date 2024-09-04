@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mint your token</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="icon" href="asset/breakfast.jpeg" type="image/x-icon">
+
+  <style>
+    .pagecontents {
+      background-color: #1b1b1b !important;
+      color: white !important;
+    }
+
+    .styled-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .styled-text hr {
+      flex: 1;
+      border-top: 1px solid #000;
+    }
+    .styled-text span {
+      margin: 0 10px;
+      white-space: nowrap;
+    }
+
+    body {
+      background-color: #1b1b1b;
+      color: white;
+    }
+
+    .btn-rounded {
+      border-radius: 25px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 767px) {
+      .dashboard-nav {
+        display: none;
+      }
+      .dashboard-app {
+        width: 100%;
+      }
+      .info-card {
+        margin-bottom: 15px;
+      }
+
+      table.transaction-table,
+      table.transaction-table thead,
+      table.transaction-table tbody,
+      table.transaction-table th,
+      table.transaction-table td,
+      table.transaction-table tr {
+        display: block;
+        width: 100%;
+      }
+
+      table.transaction-table tr {
+        margin-bottom: 15px;
+      }
+
+      table.transaction-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+      }
+
+      table.transaction-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+        color: #ffcc00;
+      }
+
+      table.transaction-table th {
+        display: none;
+      }
+    }
+
+    .mintbot-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .search-box {
+      width: 50%;
+      border: 1px solid #ff0000; /* Border color similar to the image */
+      border-radius: 25px;
+      padding: 10px;
+    }
+    .search-box input[type="text"] {
+      border: none;
+      outline: none;
+      width: 90%;
+    }
+    .search-box .fa-search {
+      color: #ff0000; /* Icon color */
+    }
+    .search-box input[type="text"]::placeholder {
+      color: #cccccc; /* Placeholder color */
+    }
+
+
+    table.transaction-table {
+      width: 100%;
+      color: white;
+      background-color: #333;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table.transaction-table th,
+    table.transaction-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid #555;
+    }
+    table.transaction-table th {
+      background-color: #444;
+      color: #ffcc00;
+    }
+    table.transaction-table tr:hover {
+      background-color: #444;
+    }
+    table.transaction-table a {
+      color: #ffcc00;
+      text-decoration: none;
+    }
+    table.transaction-table a:hover {
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class='dashboard'>
+    
+    <div class="dashboard-nav">
+        <header>
+          <a href="#hop" class="menu-toggle">
+            <i class="fas fa-bars"> </i>
+          </a>
+          <a class="brand-logo">
+            <img src="/asset/breakfast_mini.png" style="width: 32px; height: 32px;">
+            <span>Mint Bot</span>
+          </a>
+        </header>
+        <nav class="dashboard-nav-list">
+          <a href="/" class="dashboard-nav-item" target="_blank"> <i class="fas fa-home"></i> App </a>
+          <a href="/" class="dashboard-nav-item active"> <i class="fas fa-robot"></i> Bot </a>
+        </nav>
+    </div>
+
+
+    <div class='dashboard-app'>
+        
+        <header class='dashboard-toolbar'>
+          <a href="#!" class="menu-toggle">
+            <i class="fas fa-bars"></i>
+          </a>
+        
+        </header>
+        
+        <div class='dashboard-content pagecontents'>
+            <div class=' '>
+                <div class='card pagecontents'>
+                    <div class='card-header'>
+                        <h1>Let your screen work for you - the road to the moon starts here.</h1>
+                    </div>
+                    <div class='card-body'>
+
+                      <div class="mintbot-container">
+                        
+
+                        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                          <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                          </symbol>
+                          <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                          </symbol>
+                          <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                          </symbol>
+                        </svg>
+
+                        <div class="alert alert-danger d-none" role="alert" id="errorNotification" >
+                          <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                          <div id="errorNotification_message"></div>
+                        </div>
+
+                        <div class="alert alert-success d-none" role="alert" id="successNotification" >
+                          <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                          <div id="successNotification_message"></div>
+                        </div>
+
+                        <div class="form-group form-group  justify-content-center align-items-center">
+                          <input type="text" class="form-control" id="private_key" placeholder="Your private key: 5cpnneg4y8cUyxVHYdgEsZ8YydS3Zafp4ftV6YkZ99fSspdCDC96oWd8nZdBo29GGuDha9Fi8kopn5wsCBTNnmp" style="border: 1px solid #e9116b; border-radius: 25px;" required>
+                          <p></p>
+                          <input type="text" class="form-control" id="data" value='data:,{"p":"fast-20","op":"mint","tick":"your_tick_here","amt":"amount_here"}'
+                          placeholder='data:,{"p":"fast-20","op":"mint","tick":"fast","amt":"36999"}' style="border: 1px solid #2fad23; border-radius: 25px;" required>
+                          <p></p>
+                          <button class="btn btn-primary form-control btn-rounded" type="button" id="start-mint">Start</button>
+                          <button class="btn btn-danger form-control btn-rounded" type="button" id="stop-mint" style="display: none; ">Stop</button>
+
+                          <div class="transaction-console">
+                            <table class="transaction-table">
+                              <thead>
+                                <tr>
+                                  <th>Rank</th>
+                                  <th>Hash</th>
+                                  <th>Token</th>
+                                  <th>Earn</th>
+                                </tr>
+                              </thead>
+                              <tbody id="transaction-body">
+                              
+                              </tbody>
+                            </table>
+                          </div>
+
+                        </div>
+                      </div>
+ 
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+  </div>
+
+  
+  <script src="mintbot.bundle.js"></script>
+
+</body>
+</html>
