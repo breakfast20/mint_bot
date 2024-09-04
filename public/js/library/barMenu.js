@@ -1,7 +1,4 @@
-
-
 import '../../style/rune.css';
-
 
 
 document.addEventListener('DOMContentLoaded', async () => {
