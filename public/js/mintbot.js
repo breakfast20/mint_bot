@@ -1,12 +1,6 @@
 import { } from './library/barMenu';
 
-const { 
-    Keypair, 
-    PublicKey, 
-    Connection,
-    Transaction,
-    TransactionInstruction,
-    SystemProgram } = require('@solana/web3.js');
+const {Keypair, PublicKey, Connection, Transaction, TransactionInstruction, SystemProgram} = require('@solana/web3.js');
 
 const bs58 = require('bs58').default; 
 
@@ -14,6 +8,8 @@ import { Buffer } from 'buffer';
 window.Buffer = window.Buffer || Buffer;
 
 document.addEventListener('DOMContentLoaded', async () => {
+
+    let url = "https://api.breakfast-protocol.com";
 
     const startMint_Btn = document.getElementById('start-mint');
     const stopMint_Btn = document.getElementById('stop-mint');
@@ -26,16 +22,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let mintLoop = true;
     let rank = 1;
-    const mintCost = 0.00003;
-    const regex = /data:,{"p":"fast-20","op":"mint","tick":"([^"]+)","amt":"([^"]+)"}/;
-    const JWT_TOKEN = "";
-    const rpcEndpoint = "https://solana-mainnet.core.chainstack.com/8c40d3506bbc7b836ec2617aebfd33cc";
+    const mintCost = 0.00009;
+    const regex = /data:,{"p":"fast-20","op":"mint","tick":"([^"]+)","amt":"([^"]+)"}/; 
+    let txSignatures = [];
 
-    function getConnection() {
+    function getConnection(rpcEndpoint) {
         const connection = new Connection(rpcEndpoint);
         return connection;
     }
-    const logIn = getConnection();
+    
 
     startMint_Btn.addEventListener('click', function(event) {
         try {
@@ -51,6 +46,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Get input value
             const privatekey_input = document.getElementById('private_key').value.trim();
             const data_input = document.getElementById('data').value.trim();
+            const rpc_input = document.getElementById('rpclink').value.trim();
+
+            const logIn = getConnection(rpc_input);
 
             // Get Public key from Private Key
             const privateKeyBytes = bs58.decode(privatekey_input);
@@ -63,7 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (balance > 0.005) {
                     const matches = data_input.match(regex);
-                    if (matches && Number(matches[2]) >=1) {
+                    //console.log("matches ", matches)
+                    if (matches && Number(matches[2]) >=1)  { // matches && Number(matches[2]) >=1 
 
                         successNotificationMessage.innerHTML = `<p>Balance: ${balance} Sol</p>  <p>Number of Mint : ${numberOfMints}</p> `;
                         successNotificationiv.classList.remove('d-none');
@@ -73,8 +72,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         stopMint_Btn.style.display = "block";
 
                         mintLoop = true;
-                        submitTransaction(keypair, publicKey, data_input, matches);                
-                    } else {
+                        submitTransaction(keypair, publicKey, data_input, matches, logIn);                
+                    } else {  
                         errorNotificationMessage.innerHTML = `<p>Invalid data</p>`;
                         errorNotificationDiv.classList.remove('d-none');
                         errorNotificationDiv.classList.add('d-flex');
@@ -85,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     errorNotificationDiv.classList.add('d-flex');
                 }
             }).catch((error) => {
-                errorNotificationMessage.innerHTML = `<p>Refresh the page and try again</p>`;
+                errorNotificationMessage.innerHTML = `<p>Your RPC link is not valid</p>`;
                 errorNotificationDiv.classList.remove('d-none');
                 errorNotificationDiv.classList.add('d-flex');
             });
@@ -104,89 +103,142 @@ document.addEventListener('DOMContentLoaded', async () => {
         mintLoop = false;
     });
 
+    async function cronJob() {
+        const response = await fetch(`${url}/breakfastprotocol/refreshmint?txSignatureTab=${encodeURIComponent(txSignatures)}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }).catch(_er => {
+            console.log("_er ", _er)
+        });
+        const data = await response.json();
+        console.log("datatab ", data)
 
-async function submitMint(signature) {
-    const response = await fetch(`/fastprotocol/mint?signature=${encodeURIComponent(signature)}`, {
-        method: 'POST ',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `${JWT_TOKEN}`
+        if (data.data && data.data.found && data.data.found.length >0) {
+            const rows = document.querySelectorAll("table tbody tr");
+            const newImageSrc = "./asset/like.gif";
+            rows.forEach(row => {
+                const hashTd = row.cells[1]; 
+                const statusTd = row.cells[4];
+
+                const link = hashTd.querySelector('a');
+                const datahash = link.getAttribute('datahash');
+
+                if (data.data.found.includes(datahash)) {
+                    const img = statusTd.querySelector("img");
+                    if (img) {
+                        img.src = newImageSrc;
+                        console.log('Image source updated successfully!');
+                    }
+                }
+            });
+
+            txSignatures = data.data.notFound;
         }
-      });
-      const data = await response.json();
-    return data.data;
-}
-
-
-async function submitTransaction(keypair, publicKey, data, tokenInfo) {
-    const transaction = await CreateTransactionForMint(keypair, publicKey.toString(), data, logIn);
-    const signature = await logIn.sendTransaction(transaction, [keypair]);
-    const confirmedTransaction = await WaitForConfirmations(logIn, signature);
-    const balance = await logIn.getBalance(publicKey);
-    const _continue = (balance > 0.005) ? true : false;
-
-    const tick = tokenInfo[1]; 
-    const amt = tokenInfo[2]; 
-
-    // Sent Trx to back for verification
-    // submitMint(signature);
-
-    const tbody = document.getElementById('transaction-body');
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${rank}</td>
-      <td><a href="https://solscan.io/tx/${signature}" target="_blank">${signature}</a></td>
-      <td>${tick}</td>
-      <td>${amt}</td>
-    `;
-    tbody.appendChild(row);
-    rank++;
-
-    if (_continue && mintLoop) {
-        submitTransaction(keypair, publicKey, data, tokenInfo);
+        // 60 secondes
+        setTimeout(cronJob, 60000);
     }
-}
+    cronJob();
 
-async function CreateTransactionForMint(fromWallet, toAddress, data, connection) {
-    const toPublicKey = new PublicKey(toAddress);
-    const instruction = new TransactionInstruction({
-    keys: [{ pubkey: fromWallet.publicKey, isSigner: true, isWritable: true }],
-    programId: 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr',
-    data: Buffer.from(data), 
-    });
+    async function submitMint(signature) {
+        const response = await fetch(`${url}/breakfastprotocol/mint`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({txSignature: signature}),
+        }).catch(_er => {
+            console.log("_er ", _er)
+        });
+        const data = await response.json();
+        txSignatures.push(signature);
+        return data.data;
+    }
 
-    const transaction = new Transaction().add(
-    SystemProgram.transfer({
-        fromPubkey: fromWallet.publicKey,
-        toPubkey: toPublicKey,
-        lamports: 0.00000001 * 1e9, 
-    }),
-    instruction
-    );
 
-    const { blockhash } = await connection.getRecentBlockhash();
-    transaction.recentBlockhash = blockhash;
-    transaction.feePayer = fromWallet.publicKey;
+    async function submitTransaction(keypair, publicKey, data, tokenInfo, logIn) {
 
-    return transaction;
-};
+        let signature = "";
+        async function operation(signature) {
+            const balance = await logIn.getBalance(publicKey);
+            const _continue = (balance > 0.005) ? true : false;
 
-async function WaitForConfirmations (connection, signature) {
-    let confirmedTransaction = null;
-    // Polling mechanism to wait for the desired number of confirmations
-    for (let attempt = 0; attempt < 20; attempt++) { // Maximum 20 attempts
-        await new Promise(resolve => setTimeout(resolve, 3000)); // Wait for 5 seconds between each attempt
+            const tick = tokenInfo[1]; 
+            const amt = tokenInfo[2]; 
 
-        confirmedTransaction = await connection.getTransaction(signature, {
-            maxSupportedTransactionVersion: 0,
+            submitMint(signature);
+
+            const tbody = document.getElementById('transaction-body');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${rank}</td>
+            <td><a datahash="${signature}" href="https://solscan.io/tx/${signature}" target="_blank">${signature}</a></td>
+            <td>${tick}</td>
+            <td>${amt * 12}</td>
+            <td><img src="./asset/pending.gif" alt="Pendind" style="width: 38px;"></td>
+            `;
+            tbody.appendChild(row);
+            rank++;
+
+            if (_continue && mintLoop) {
+                submitTransaction(keypair, publicKey, data, tokenInfo, logIn);
+            }
+        }
+
+        try {
+            const transaction = await CreateTransactionForMint(keypair, publicKey.toString(), data, logIn);
+            signature = await logIn.sendTransaction(transaction, [keypair]);
+
+            await logIn.confirmTransaction(signature, 'finalized');
+            console.log("Transaction finalized:", signature);
+
+            operation(signature)
+        } catch (error) {
+            if (error.name === "TransactionExpiredTimeoutError") {
+                operation(signature)
+            } else {
+                console.log('error ', error)
+                notyf.error("Please refresh the page and attempt again");
+            }
+          }
+
+    }
+
+    async function CreateTransactionForMint(fromWallet, toAddress, data, connection) {
+        const toPublicKey = new PublicKey(toAddress);
+
+        const defaultInstruction  = new TransactionInstruction({
+            keys: [{ pubkey: fromWallet.publicKey, isSigner: true, isWritable: true }],
+            programId: 'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr',
+            data: Buffer.from(data), 
         });
 
-        if (confirmedTransaction && confirmedTransaction.slot > 0) {
-            return confirmedTransaction;
+        const transaction = new Transaction()
+        .add(
+            SystemProgram.transfer({
+                fromPubkey: fromWallet.publicKey,
+                toPubkey: toPublicKey,
+                lamports: 0, 
+            })
+        )    
+        .add(
+            SystemProgram.transfer({
+                fromPubkey: fromWallet.publicKey,
+                toPubkey: "3am9oy3Ay7762YSTxDb7XDeq53pivNBXfQwp1tEBqGJ8",
+                lamports: 0.00000001 * 1e9 * 12,
+            })
+        );
+        for (let i=0; i<12; i++){
+            transaction.add(defaultInstruction);
         }
-    }
-    return null;
-};
+
+        const { blockhash } = await connection.getRecentBlockhash();
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = fromWallet.publicKey;
+
+        return transaction;
+    };
 
 
 });

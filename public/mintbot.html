@@ -145,7 +145,7 @@
     
     <div class="dashboard-nav">
         <header>
-          <a href="#hop" class="menu-toggle">
+          <a href="#" class="menu-toggle">
             <i class="fas fa-bars"> </i>
           </a>
           <a class="brand-logo">
@@ -154,7 +154,7 @@
           </a>
         </header>
         <nav class="dashboard-nav-list">
-          <a href="/" class="dashboard-nav-item" target="_blank"> <i class="fas fa-home"></i> App </a>
+          <a href="https://brunch.breakfast-protocol.com/" class="dashboard-nav-item" target="_blank"> <i class="fas fa-home"></i> App </a>
           <a href="/" class="dashboard-nav-item active"> <i class="fas fa-robot"></i> Bot </a>
         </nav>
     </div>
@@ -208,6 +208,8 @@
                           <input type="text" class="form-control" id="data" value='data:,{"p":"fast-20","op":"mint","tick":"your_tick_here","amt":"amount_here"}'
                           placeholder='data:,{"p":"fast-20","op":"mint","tick":"fast","amt":"36999"}' style="border: 1px solid #2fad23; border-radius: 25px;" required>
                           <p></p>
+                          <input type="text" class="form-control" id="rpclink" value=''placeholder='your RPC link' style="border: 1px solid #d815a7; border-radius: 25px;" required>
+                          <p></p>
                           <button class="btn btn-primary form-control btn-rounded" type="button" id="start-mint">Start</button>
                           <button class="btn btn-danger form-control btn-rounded" type="button" id="stop-mint" style="display: none; ">Stop</button>
 
@@ -219,6 +221,7 @@
                                   <th>Hash</th>
                                   <th>Token</th>
                                   <th>Earn</th>
+                                  <th>Status</th>
                                 </tr>
                               </thead>
                               <tbody id="transaction-body">

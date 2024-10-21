@@ -3,7 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 const app = express();
-const port = 3000;
+const port = 15000;
 
 
 app.use(bodyParser.json());
@@ -15,9 +15,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'mintbot.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Serveur run on http://localhost:${port}`);
-});
+app.listen(port, () => {});
 
 
 
